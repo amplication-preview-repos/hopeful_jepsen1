@@ -1,0 +1,136 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Recipe {
+  comments        Comment[]
+  cookingTime     Int?
+  createdAt       DateTime  @default(now())
+  description     String?
+  id              String    @id @default(cuid())
+  image           Json?
+  ingredients     String?
+  instructions    String?
+  isPublished     Boolean?
+  likes           Like[]
+  preparationTime Int?
+  servings        Int?
+  shares          Share[]
+  title           String?
+  updatedAt       DateTime  @updatedAt
+  user            User?     @relation(fields: [userId], references: [id])
+  userId          String?
+  video           Json?
+}
+
+model Category {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Like {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  recipe    Recipe?  @relation(fields: [recipeId], references: [id])
+  recipeId  String?
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Comment {
+  content   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  recipe    Recipe?  @relation(fields: [recipeId], references: [id])
+  recipeId  String?
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model DiscussionForum {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  title       String?
+  updatedAt   DateTime @updatedAt
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model LiveSession {
+  createdAt   DateTime  @default(now())
+  description String?
+  endTime     DateTime?
+  id          String    @id @default(cuid())
+  startTime   DateTime?
+  title       String?
+  updatedAt   DateTime  @updatedAt
+  user        User?     @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model Share {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    String?
+  recipe    Recipe?  @relation(fields: [recipeId], references: [id])
+  recipeId  String?
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Post {
+  content   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  shares    Share[]
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Challenge {
+  createdAt   DateTime  @default(now())
+  description String?
+  endTime     DateTime?
+  id          String    @id @default(cuid())
+  isActive    Boolean?
+  startTime   DateTime?
+  title       String?
+  updatedAt   DateTime  @updatedAt
+  user        User?     @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model User {
+  challenges       Challenge[]
+  comments         Comment[]
+  createdAt        DateTime          @default(now())
+  discussionForums DiscussionForum[]
+  email            String?           @unique
+  firstName        String?
+  id               String            @id @default(cuid())
+  isActive         Boolean?
+  lastName         String?
+  likes            Like[]
+  liveSessions     LiveSession[]
+  password         String
+  posts            Post[]
+  recipes          Recipe[]
+  roles            Json
+  shares           Share[]
+  updatedAt        DateTime          @updatedAt
+  username         String            @unique
+}
